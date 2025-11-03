@@ -1,14 +1,33 @@
-## Getting Started (Docker Compose)
+# agents-wrangler-core (Rust)
 
-> Clone two repos side by side:
->
-> ```
-> ~/work/agent-wrangler        # Python (this repo)
-> ~/work/agents-wrangler-core  # Rust core
-> ```
+Fast core orchestrator for Agent Wrangler.
 
-### 1) Build & run services
+## Run (standalone)
+
+The core expects a tester service at `TESTER_URL` (FastAPI app from the Python repo).
+By default it uses a Mock LLM (no API key required).
+
 ```bash
-docker compose up --build
-# core -> http://localhost:8080
-# tester -> http://localhost:7001
+# build & run locally
+cargo run
+# or via Docker
+docker build -t aw-core .
+docker run --rm -p 8080:8080 -e TESTER_URL=http://host.docker.internal:7001 aw-core
+```
+
+Switch to real LLM (OpenAI-compatible)
+
+```
+USE_MOCK_LLM=0
+OPENAI_API_KEY=...
+OPENAI_BASE_URL=https://api.openai.com
+OPENAI_MODEL=gpt-4o-mini
+```
+
+API
+	•	POST /api/v1/bridge – best-of-N bridge
+	•	POST /api/v1/bridge/multi – multi-agent pipeline (architect → builders → specialists → final review)
+
+For end-to-end local setup (tester + core via Docker Compose), see the main Quick Start in
+agent-wrangler: https://github.com/if-i/agent-wrangler
+
